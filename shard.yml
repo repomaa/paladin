@@ -1,0 +1,23 @@
+name: guardian
+version: 0.1.0
+
+authors:
+  - Joakim Reinert <mail@jreinert.com>
+
+targets:
+  guardian:
+    main: src/guardian/cli.cr
+
+dependencies:
+  watcher:
+    github: faustinoaq/watcher
+
+scripts:
+  postinstall: shards build --release
+
+executables:
+  - guardian
+
+crystal: 0.26.1
+
+license: MIT
