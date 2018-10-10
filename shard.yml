@@ -13,7 +13,7 @@ dependencies:
     github: faustinoaq/watcher
 
 scripts:
-  postinstall: shards build --release
+  postinstall: make install
 
 executables:
   - guardian
