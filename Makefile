@@ -1,6 +1,8 @@
 all:
 
-install: bin/guardian
+install: ../../bin/guardian
+
+../../bin/guardian: bin/guardian
 	cp bin/guardian ../../bin/
 
 bin/guardian:
