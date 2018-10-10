@@ -16,6 +16,7 @@ class Guardian
       reload_server = setup_reload_server(reload_channel)
       puts "Starting up websocket reload server"
       spawn { reload_server.listen(port) }
+      @reload_channel = reload_channel
     end
   end
 
@@ -23,6 +24,7 @@ class Guardian
     websocket_handler = HTTP::WebSocketHandler.new do |socket, context|
       loop do
         channel.receive
+        puts "Reloading clients"
         socket.send("Server reloaded!")
       end
     end
