@@ -1,12 +1,33 @@
 require "watcher"
+require "http/server"
+require "http/server/handlers/websocket_handler"
 
 class Guardian
   @target_channel : Channel(Process?)
   @build_channel : Channel(Process?)
+  @reload_channel : Channel(Bool)?
 
-  def initialize(@target : String, @files : Array(String))
+  def initialize(@target : String, @files : Array(String), websocket_port : Int32?)
     @target_channel = Channel(Process?).new(1).tap { |c| c.send(nil) }
     @build_channel = Channel(Process?).new(1).tap { |c| c.send(nil) }
+
+    websocket_port.try do |port|
+      reload_channel = Channel(Bool).new(1)
+      reload_server = setup_reload_server(reload_channel)
+      puts "Starting up websocket reload server"
+      spawn { reload_server.listen(port) }
+    end
+  end
+
+  def setup_reload_server(channel)
+    websocket_handler = HTTP::WebSocketHandler.new do |socket, context|
+      loop do
+        channel.receive
+        socket.send("Server reloaded!")
+      end
+    end
+
+    HTTP::Server.new(websocket_handler)
   end
 
   def run
@@ -56,6 +77,7 @@ class Guardian
       error: Process::Redirect::Inherit
     )
     @target_channel.send(process)
+    @reload_channel.try(&.send(true))
     process.wait
   end
 end
