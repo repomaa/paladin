@@ -29,7 +29,7 @@ class Guardian
       end
     end
 
-    HTTP::Server.new(websocket_handler)
+    HTTP::Server.new([websocket_handler])
   end
 
   def run
