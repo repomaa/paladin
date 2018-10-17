@@ -1,12 +1,12 @@
 all:
 
-install: ../../bin/guardian
+install: ../../bin/paladin
 
-../../bin/guardian: bin/guardian ../../bin
-	cp bin/guardian ../../bin/
+../../bin/paladin: bin/paladin ../../bin
+	cp bin/paladin ../../bin/
 
 ../../bin:
 	mkdir -p ../../bin
 
-bin/guardian:
-	shards build --release guardian
+bin/paladin:
+	shards build --release paladin

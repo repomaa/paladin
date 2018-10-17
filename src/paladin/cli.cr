@@ -1,9 +1,10 @@
 require "option_parser"
-require "../guardian"
+require "../paladin"
 
 USAGE = "Usage: #{PROGRAM_NAME} [options] target file [files ...]"
 
 websocket_port = nil
+reload_trigger = "listening"
 
 parser =  OptionParser.new do |p|
   p.banner = USAGE
@@ -14,6 +15,14 @@ parser =  OptionParser.new do |p|
     "Start a websocket server at http://localhost:PORT that notifies clients when the target has been restarted"
   ) do |port|
     websocket_port = Int32.new(port)
+  end
+
+  p.on(
+    "-t STRING",
+    "--reload-trigger=STRING",
+    "Send reload message to websocket clients when STRING appears on the standard output of the built target"
+  ) do |string|
+    reload_trigger = string
   end
 
   p.on("-h", "--help", "Show this message") do
@@ -28,13 +37,13 @@ abort(parser) if ARGV.size < 2
 target = ARGV.first
 files = ARGV[1..-1]
 
-puts "Starting guardian. Target: #{target} files: #{files}"
-guardian = Guardian.new(target, files, websocket_port)
+puts "Starting paladin. Target: #{target} files: #{files}"
+paladin = Paladin.new(target, files, websocket_port, reload_trigger)
 
 Signal::INT.trap do
-  guardian.kill_running_build
-  guardian.kill_running_target
+  paladin.kill_running_build
+  paladin.kill_running_target
   exit
 end
 
-guardian.run
+paladin.run

@@ -1,6 +1,6 @@
 require "./spec_helper"
 
-describe Guardian do
+describe Paladin do
   # TODO: Write tests
 
   it "works" do

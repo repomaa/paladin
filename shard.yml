@@ -1,12 +1,12 @@
-name: guardian
+name: paladin
 version: 0.1.0
 
 authors:
   - Joakim Reinert <mail@jreinert.com>
 
 targets:
-  guardian:
-    main: src/guardian/cli.cr
+  paladin:
+    main: src/paladin/cli.cr
 
 dependencies:
   watcher:
@@ -16,7 +16,7 @@ scripts:
   postinstall: make install
 
 executables:
-  - guardian
+  - paladin
 
 crystal: 0.26.1
 

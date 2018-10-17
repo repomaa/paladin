@@ -1,4 +1,4 @@
-# Guardian
+# Paladin
 
 tldr; Shotgun for crystal projects
 
@@ -11,17 +11,26 @@ Add it to your development dependencies:
 
 ``` yaml
 development_dependencies:
-  guardian:
-    github: jreinert/guardian
+  paladin:
+    github: jreinert/paladin
 ```
 
 ## Usage
 
-`bin/guardian my_app shard.lock 'src/**/*.cr'`
+```
+bin/paladin [options] target file [files ...]
+    -w PORT, --websocket-port=PORT      Start a websocket server at http://localhost:PORT
+                                        that notifies clients when the target has been restarted
+
+    -t STRING, --reload-trigger=STRING  Send reload message to websocket clients when STRING
+                                        appears on the standard output of the built target
+
+    -h, --help                          Show this message
+```
 
 ## Contributing
 
-1. Fork it (<https://github.com/jreinert/guardian/fork>)
+1. Fork it (<https://github.com/jreinert/paladin/fork>)
 2. Create your feature branch (`git checkout -b my-new-feature`)
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
