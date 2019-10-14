@@ -8,16 +8,16 @@ class Paladin
   @target_channel : Channel(Process?)
   @build_channel : Channel(Process?)
   @reload_listeners : Array(Channel(Bool)) = [] of Channel(Bool)
-  @reload_trigger : String
+  @reload_trigger : String?
 
-  def initialize(@target : String, @files : Array(String), websocket_port : Int32?, @reload_trigger = "listening")
+  def initialize(@target : String, @files : Array(String), websocket_port : Int32?, @reload_trigger = nil)
     @target_channel = Channel(Process?).new(1).tap { |c| c.send(nil) }
     @build_channel = Channel(Process?).new(1).tap { |c| c.send(nil) }
     @reload_listeners_mutex = Mutex.new
 
     websocket_port.try do |port|
       reload_server = setup_reload_server
-      puts "Starting up websocket reload server"
+      puts "Starting up websocket reload server on ws://127.0.0.1:#{port}"
       spawn { reload_server.listen(port) }
     end
   end
@@ -84,19 +84,19 @@ class Paladin
     process.wait
   end
 
-  def watch_output(output)
+  def watch_output(output, trigger)
     channel = Channel(Bool).new(3)
 
     spawn do
-      buffer = Deque(Char).new(@reload_trigger.size)
+      buffer = Deque(Char).new(trigger.size)
 
       loop do
         char = output.read_char
         break if char.nil?
         print char
         buffer.push(char)
-        buffer.shift if buffer.size > @reload_trigger.size
-        break if buffer.join == @reload_trigger
+        buffer.shift if buffer.size > trigger.size
+        break if buffer.join == trigger
       end
 
       channel.send(true)
@@ -120,14 +120,28 @@ class Paladin
   end
 
   def start_target
+    output = @reload_trigger ? Process::Redirect::Pipe : Process::Redirect::Inherit
     process = Process.new(
       "bin/#{@target}",
-      output: Process::Redirect::Pipe,
+      output: output,
       error: Process::Redirect::Inherit
     )
     @target_channel.send(process)
 
-    spawn watch_output(process.output)
+    reload_trigger = @reload_trigger
+
+    if reload_trigger
+      spawn watch_output(process.output, reload_trigger)
+    else
+      spawn do
+        sleep OUTPUT_TIMEOUT
+
+        @reload_listeners_mutex.synchronize do
+          @reload_listeners.each(&.send(true))
+        end
+      end
+    end
+
     process.wait
   end
 end

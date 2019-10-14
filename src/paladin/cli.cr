@@ -5,7 +5,7 @@ require "../paladin"
 USAGE = "Usage: #{PROGRAM_NAME} [options] target file [files ...]"
 
 websocket_port = nil
-reload_trigger = "listening"
+reload_trigger = nil
 
 parser =  OptionParser.new do |p|
   p.banner = USAGE
