@@ -85,22 +85,28 @@ class Paladin
   end
 
   def watch_output(output)
-    channel = Channel(Bool).new(2)
+    channel = Channel(Bool).new(3)
 
     spawn do
+      buffer = Deque(Char).new(@reload_trigger.size)
+
       loop do
-        line = output.gets
-        puts line
-        break unless line
-        next if line.includes?(@reload_trigger)
-        channel.send(true)
-        break
+        char = output.read_char
+        break if char.nil?
+        print char
+        buffer.push(char)
+        buffer.shift if buffer.size > @reload_trigger.size
+        break if buffer.join == @reload_trigger
       end
+
+      channel.send(true)
+      IO.copy(output, STDOUT)
+      channel.send(false)
     end
 
     spawn do
       sleep OUTPUT_TIMEOUT
-      channel.send(true)
+      channel.send(false)
     end
 
     channel.receive
@@ -109,7 +115,7 @@ class Paladin
       @reload_listeners.each(&.send(true))
     end
 
-    IO.copy(output, STDOUT)
+    2.times { channel.receive }
   rescue Errno
   end
 
