@@ -1,3 +1,4 @@
+require "docker"
 require "option_parser"
 require "../paladin"
 
@@ -15,6 +16,13 @@ parser =  OptionParser.new do |p|
     "Start a websocket server at http://localhost:PORT that notifies clients when the target has been restarted"
   ) do |port|
     websocket_port = Int32.new(port)
+  end
+
+  p.on(
+    "-d", "--docker",
+    "Use docker specific workarounds for stdio and ipc signalling. Set this if you start paladin from docker"
+  ) do
+    Docker.setup
   end
 
   p.on(
