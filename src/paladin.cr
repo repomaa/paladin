@@ -10,7 +10,7 @@ class Paladin
   @reload_listeners : Array(Channel(Bool)) = [] of Channel(Bool)
   @reload_trigger : String?
 
-  def initialize(@target : String, @files : Array(String), websocket_port : Int32?, @reload_trigger = nil)
+  def initialize(@target : String, @files : Array(String), websocket_port : Int32?, @params = [] of String, @reload_trigger = nil)
     @target_channel = Channel(Process?).new(1).tap { |c| c.send(nil) }
     @build_channel = Channel(Process?).new(1).tap { |c| c.send(nil) }
     @reload_listeners_mutex = Mutex.new
@@ -123,6 +123,7 @@ class Paladin
     output = @reload_trigger ? Process::Redirect::Pipe : Process::Redirect::Inherit
     process = Process.new(
       "bin/#{@target}",
+      @params,
       output: output,
       error: Process::Redirect::Inherit
     )

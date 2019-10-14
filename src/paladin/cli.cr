@@ -2,10 +2,11 @@ require "docker"
 require "option_parser"
 require "../paladin"
 
-USAGE = "Usage: #{PROGRAM_NAME} [options] target file [files ...]"
+USAGE = "Usage: #{PROGRAM_NAME} [options] target file [files ...] [-- program args]"
 
 websocket_port = nil
 reload_trigger = nil
+params = [] of String
 
 parser =  OptionParser.new do |p|
   p.banner = USAGE
@@ -37,6 +38,10 @@ parser =  OptionParser.new do |p|
     puts p
     exit
   end
+
+  p.unknown_args do |_, dash_args|
+    args = dash_args
+  end
 end
 
 parser.parse!
@@ -46,7 +51,7 @@ target = ARGV.first
 files = ARGV[1..-1]
 
 puts "Starting paladin. Target: #{target} files: #{files}"
-paladin = Paladin.new(target, files, websocket_port, reload_trigger)
+paladin = Paladin.new(target, files, websocket_port, params, reload_trigger)
 
 Signal::INT.trap do
   paladin.kill_running_build
