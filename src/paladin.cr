@@ -116,7 +116,7 @@ class Paladin
     end
 
     2.times { channel.receive }
-  rescue Errno
+  rescue IO::Error
   end
 
   def start_target

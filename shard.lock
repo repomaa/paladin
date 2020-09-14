@@ -1,10 +1,10 @@
-version: 1.0
+version: 2.0
 shards:
   docker:
-    github: repomaa/docker.cr
+    git: https://github.com/repomaa/docker.cr.git
     version: 0.1.2
 
   watcher:
-    github: faustinoaq/watcher
+    git: https://github.com/faustinoaq/watcher.git
     version: 0.3.0
 

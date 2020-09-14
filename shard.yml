@@ -20,6 +20,6 @@ scripts:
 executables:
   - paladin
 
-crystal: 0.26.1
+crystal: 0.35.1
 
 license: MIT
