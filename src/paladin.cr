@@ -76,7 +76,7 @@ class Paladin
 
   def build
     process = Process.new(
-      "shards", ["build", @target],
+      "shards", ["build", @target, "--error-trace"],
       output: Process::Redirect::Inherit,
       error: Process::Redirect::Inherit
     )
